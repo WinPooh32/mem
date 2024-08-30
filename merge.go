@@ -1,19 +1,18 @@
 package mem
 
 import (
+	"cmp"
 	"iter"
-
-	"golang.org/x/exp/constraints"
 )
 
-func Merge[K constraints.Ordered, V any](a, b iter.Seq2[K, V], cs ...iter.Seq2[K, V]) iter.Seq2[K, V] {
+func Merge[K cmp.Ordered, V any](a, b iter.Seq2[K, V], cs ...iter.Seq2[K, V]) iter.Seq2[K, V] {
 	if len(cs) > 0 {
 		return mergeN(append(cs, a, b))
 	}
 	return merge2(a, b)
 }
 
-func merge2[K constraints.Ordered, V any](a, b iter.Seq2[K, V]) iter.Seq2[K, V] {
+func merge2[K cmp.Ordered, V any](a, b iter.Seq2[K, V]) iter.Seq2[K, V] {
 	return func(yield func(k K, v V) bool) {
 		pullA, cancelA := iter.Pull2(a)
 		defer cancelA()
@@ -73,7 +72,7 @@ func merge2[K constraints.Ordered, V any](a, b iter.Seq2[K, V]) iter.Seq2[K, V] 
 	}
 }
 
-func mergeN[K constraints.Ordered, V any](cs []iter.Seq2[K, V]) iter.Seq2[K, V] {
+func mergeN[K cmp.Ordered, V any](cs []iter.Seq2[K, V]) iter.Seq2[K, V] {
 	return func(yield func(k K, v V) bool) {
 		pulls := make([]func() (K, V, bool), 0, len(cs))
 		cancels := make([]func(), 0, len(cs))
@@ -121,7 +120,7 @@ func mergeN[K constraints.Ordered, V any](cs []iter.Seq2[K, V]) iter.Seq2[K, V] 
 	}
 }
 
-func pull[K constraints.Ordered, V any](pulls []func() (K, V, bool), keys []K, vals []V, ready []bool) {
+func pull[K cmp.Ordered, V any](pulls []func() (K, V, bool), keys []K, vals []V, ready []bool) {
 	if len(pulls) != len(keys) || len(pulls) != len(vals) || len(pulls) != len(ready) {
 		panic("all lengths must be equal!")
 	}
@@ -133,7 +132,7 @@ func pull[K constraints.Ordered, V any](pulls []func() (K, V, bool), keys []K, v
 	}
 }
 
-func argMin[K constraints.Ordered](x []K, ready []bool) int {
+func argMin[K cmp.Ordered](x []K, ready []bool) int {
 	if len(x) < 1 {
 		panic("empty!")
 	}
