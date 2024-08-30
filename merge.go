@@ -5,6 +5,8 @@ import (
 	"iter"
 )
 
+// Merge combines non-decreasing sequences into one.
+// Will panic when some of sequences are not ordered.
 func Merge[K cmp.Ordered, V any](a, b iter.Seq2[K, V], cs ...iter.Seq2[K, V]) iter.Seq2[K, V] {
 	if len(cs) > 0 {
 		return mergeN(append(cs, a, b))
